@@ -4,19 +4,48 @@ import { Grid } from '@mui/material';
 import { Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import styles from './Calculator.module.scss';
-import classNames from 'classnames';
-
 
 const useStyles = makeStyles({
   button: {
     borderRadius: 8
   }
-})
-
+});
 
 const Calculator = () => {
   const [result, setResult] = useState<string>("0");
   const classes = useStyles();
+
+  const handleAction = (symbol) => {
+    console.log('Pushed:', symbol);
+  }
+
+  const rowFactory = (symbolsRow: (string | number)[]) => {
+    const diffLayoutSymbols: (number | string)[] = [0];
+    return (
+      <Grid item container xs={12} mb={1} spacing={1} alignItems="flex-start" >
+        {
+          symbolsRow.map(symbol => {
+            return (
+              !diffLayoutSymbols.includes(symbol) ?
+                <Grid item xs={3} key={symbol}>
+                  <Button
+                    className={styles['regular-button']}
+                    onClick={(e) => void handleAction(symbol)}
+                    fullWidth
+                    variant="contained">
+                    {symbol}
+                  </Button>
+                </Grid>
+                :
+                <Grid item xs={6} key={symbol}>
+                  <Button className={`${styles['regular-button']} ${styles['double-button']}`} onClick={(e) => void handleAction(symbol)} fullWidth variant="contained">0</Button>
+                </Grid>
+            )
+          })
+        }
+      </Grid>
+    )
+  }
 
   return (
     <Grid container justifyContent="center"  >
@@ -24,74 +53,16 @@ const Calculator = () => {
         <Grid item xs={12}>
           <Typography variant="h2" align="right">{result}</Typography>
         </Grid>
-        <Grid item container xs={12} spacing={1} mb={1} alignItems="flex-start" >
-          <Grid item xs={3}>
-            <Button className={styles['regular-button']} fullWidth variant="contained">CC</Button>
-          </Grid>
-          <Grid item xs={3}>
-            <Button className={styles['regular-button']} fullWidth variant="contained">&#177;</Button>
-          </Grid>
-          <Grid item xs={3}>
-            <Button className={styles['regular-button']} fullWidth variant="contained">TIP</Button>
-          </Grid>
-          <Grid item xs={3}>
-            <Button className={styles['regular-button']} fullWidth variant="contained">&#247;</Button>
-          </Grid>
-        </Grid>
-        <Grid item container xs={12} mb={1} spacing={1} alignItems="flex-start" >
-          <Grid item xs={3}>
-            <Button className={styles['regular-button']} fullWidth variant="contained">7</Button>
-          </Grid>
-          <Grid item xs={3}>
-            <Button className={styles['regular-button']} fullWidth variant="contained">8</Button>
-          </Grid>
-          <Grid item xs={3}>
-            <Button className={styles['regular-button']} fullWidth variant="contained">9</Button>
-          </Grid>
-          <Grid item xs={3}>
-            <Button className={styles['regular-button']} fullWidth variant="contained">&#215;</Button>
-          </Grid>
-        </Grid>
-        <Grid item container xs={12} mb={1} spacing={1} alignItems="flex-start" >
-          <Grid item xs={3}>
-            <Button className={styles['regular-button']} fullWidth variant="contained">4</Button>
-          </Grid>
-          <Grid item xs={3}>
-            <Button className={styles['regular-button']} fullWidth variant="contained">5</Button>
-          </Grid>
-          <Grid item xs={3}>
-            <Button className={styles['regular-button']} fullWidth variant="contained">6</Button>
-          </Grid>
-          <Grid item xs={3}>
-            <Button className={styles['regular-button']} fullWidth variant="contained">-</Button>
-          </Grid>
-        </Grid>
-        <Grid item container xs={12} spacing={1} mb={1} alignItems="flex-start" >
-          <Grid item xs={3}>
-            <Button className={styles['regular-button']} fullWidth variant="contained">1</Button>
-          </Grid>
-          <Grid item xs={3}>
-            <Button className={styles['regular-button']} fullWidth variant="contained">2</Button>
-          </Grid>
-          <Grid item xs={3}>
-            <Button className={styles['regular-button']} fullWidth variant="contained">3</Button>
-          </Grid>
-          <Grid item xs={3}>
-            <Button className={styles['regular-button']} fullWidth variant="contained">+</Button>
-          </Grid>
-        </Grid>
-        <Grid item container xs={12} spacing={1} alignItems="flex-start" >
-          <Grid item xs={6}>
-            <Button className={`${styles['regular-button']} ${styles['zero-button']}`} fullWidth variant="contained">0</Button>
-          </Grid>
-          <Grid item xs={3}>
-            <Button className={styles['regular-button']} fullWidth variant="contained">.</Button>
-          </Grid>
-          <Grid item xs={3}>
-            <Button className={styles['regular-button']} fullWidth variant="contained">=</Button>
-          </Grid>
-          
-        </Grid>
+        {
+          [
+            rowFactory(['M', 'M+', '\u2190', 'C']),
+            rowFactory(['M+', 'MC', "\u00B1", "\u00F7"]),
+            rowFactory([7, 8, 9, "\u00D7"]),
+            rowFactory([4, 5, 6, '-']),
+            rowFactory([1, 2, 3, '+']),
+            rowFactory([0, '.', '='])
+          ]
+        }
       </Grid>
     </Grid>
   )
