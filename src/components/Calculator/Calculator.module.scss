@@ -1,0 +1,13 @@
+.container {
+  border: 1px solid blue;
+  // height: 600px;
+}
+
+button.regular-button {
+  font-size: 1.3em;
+  border-radius: 50% / 80%;
+}
+
+button.zero-button {
+  border-radius: 25% / 40px;
+}
