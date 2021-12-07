@@ -37,7 +37,7 @@ class Computator {
 
 export const computator = new Computator();
 
-function parse(result: string): string {
+export function parse(result: string): string {
   let number: number;
   let parsedNumber: string;
 

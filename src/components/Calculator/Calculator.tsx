@@ -4,7 +4,8 @@ import { Grid } from '@mui/material';
 import { Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import styles from './Calculator.module.scss';
-import { computator } from '../../utils/computator';
+import { computator, parse } from '../../utils/computator';
+import useLocalStorage from '../../hooks/use-local-storage';
 
 const useStyles = makeStyles({
   button: {
@@ -20,7 +21,7 @@ const Calculator = () => {
   const [secondOperand, setSecondOperand] = useState<number>(0);
   const [operandDivider, setOperandDivider] = useState<boolean>(false);
   const [operator, setOperator] = useState('');
-  const classes = useStyles();
+  const [memory, setMemory] = useLocalStorage('calc_mem', 0);
 
   const enterDigit = (digit) => {
     const updatedValue: string = (result === '0' || operandDivider) ? digit.toString() : result.toString() + digit;
@@ -100,18 +101,33 @@ const Calculator = () => {
         const displayValue = parseOperand(result);
         makeOperation(displayValue);
         setSecondOperand(displayValue);
+        break;
+      case 'M':
+        setMemory(+result);
+        setOperandDivider(true);
+        break;
+      case 'MC':
+        setMemory(0);
+        break;
+      case 'MR':
+        setResult(parse(memory.toString()));
+        break;
+      case 'M+':
+        setOperandDivider(true);
+        setMemory(memory + +result);
+        break;
     }
   }
 
   const rowFactory = (symbolsRow: (string | number)[]) => {
     const diffLayoutSymbols: (number | string)[] = [0];
     return (
-      <Grid item container xs={12} mb={1} spacing={1} alignItems="flex-start" >
+      <Grid item container xs={12} mb={1} spacing={1} alignItems="flex-start" key={symbolsRow.join()} >
         {
           symbolsRow.map(symbol => {
             return (
               !diffLayoutSymbols.includes(symbol) ?
-                <Grid item xs={3} key={symbol.toString() + Math.random()}>
+                <Grid item xs={3} key={symbol.toString() + Math.random()} className={styles['button-container']}>
                   <Button
                     className={styles['regular-button']}
                     onClick={(e) => void handleAction(symbol)}
@@ -134,6 +150,10 @@ const Calculator = () => {
   return (
     <Grid container justifyContent="center"  >
       <Grid item xs={12} sm={6} md={4} lg={3} xl={2} p={0.5} className={styles.container} spacing={0} container direction="row" alignItems="flex-start" >
+        <Grid item xs={12}>
+          <Typography className={styles.indicator}>{memory ? 'M' : ''}</Typography>
+          <Typography className={styles.indicator}>E</Typography>
+        </Grid>
         <Grid item xs={12}>
           <Typography variant="h3" align="right" className={styles.display}>{result}</Typography>
         </Grid>

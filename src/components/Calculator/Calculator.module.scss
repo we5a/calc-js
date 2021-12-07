@@ -1,3 +1,5 @@
+$last-row-color: #fd9500;
+
 .container {
   border: 1px solid blue;
   // height: 600px;
@@ -14,4 +16,22 @@ button.regular-button {
 
 button.double-button {
   border-radius: 25% / 40px;
+}
+
+.button-container:last-of-type {
+  Button {
+    background-color: $last-row-color;
+  }
+}
+
+p.indicator {
+  width: 1em;
+  margin-right: 3px;
+  padding: 0;
+  display: inline-block;
+  position: relative;
+  top: 1em;
+  font-size: 0.9em;
+  font-weight: 600;
+  line-height: 1;
 }
