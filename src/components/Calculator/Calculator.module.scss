@@ -37,3 +37,13 @@ p.indicator {
   font-weight: 600;
   line-height: 1;
 }
+
+@media screen and (max-width: 600px) {
+  button.regular-button {
+    border-radius: 30% / 80%;
+  }
+
+  button.double-button {
+    border-radius: 15% / 40px;
+  }
+}
