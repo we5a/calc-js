@@ -4,6 +4,7 @@ import { Grid } from '@mui/material';
 import { Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import styles from './Calculator.module.scss';
+import { computator } from '../../utils/computator';
 
 const useStyles = makeStyles({
   button: {
@@ -11,12 +12,95 @@ const useStyles = makeStyles({
   }
 });
 
+const MAX_REGISTER = 10;
+
 const Calculator = () => {
   const [result, setResult] = useState<string>("0");
+  const [firstOperand, setFirstOperand] = useState<number>(0);
+  const [secondOperand, setSecondOperand] = useState<number>(0);
+  const [operandDivider, setOperandDivider] = useState<boolean>(false);
+  const [operator, setOperator] = useState('');
   const classes = useStyles();
 
+  const enterDigit = (digit) => {
+    const updatedValue: string = (result === '0' || operandDivider) ? digit.toString() : result.toString() + digit;
+
+    if (updatedValue.length <= MAX_REGISTER) {
+      setResult(updatedValue);
+    }
+
+    if (operandDivider) {
+      setOperandDivider(false);
+    }
+  }
+
+  const parseOperand = (str: string): number => {
+    return str.includes('.') ? Number.parseFloat(str) : Number.parseInt(str);
+  }
+
+  const makeOperation = (second) => {
+    const result = computator[operator](firstOperand, second);
+    setResult(result);
+    setFirstOperand(result); // to number change
+    setSecondOperand(0);
+  }
+
   const handleAction = (symbol) => {
-    console.log('Pushed:', symbol);
+    if (typeof symbol === 'number') {
+      enterDigit(symbol);
+      return;
+    }
+
+    switch (symbol) {
+      case '\u2190':    // <--
+        if (result.match(/\-[1-9]{1}$/g)?.length) {
+          setResult('0');
+          break;
+        }
+        setResult(result.slice(0, -1) || '0');
+        break;
+      case 'C':
+        setResult('0');
+        break;
+      case '\u00B1':
+        if (result === '0') {
+          break;
+        } else if (result[0] !== '-') {
+          setResult('-'.concat(result));
+          break;
+        } else {
+          setResult(result.slice(1));
+        }
+        break;
+      case '.':
+        if (result.includes('.')) break;
+        setResult(result + '.');
+        break;
+      case '\u00F7':    // divide
+        setOperandDivider(true);
+        setFirstOperand(parseOperand(result));
+        setOperator('divide');
+        break;
+      case '\u00D7':    // multiply
+        setOperandDivider(true);
+        setFirstOperand(parseOperand(result));
+        setOperator('multiply');
+        break;
+      case '+':
+        setOperandDivider(true);
+        setFirstOperand(parseOperand(result));
+        setOperator('add');
+        break;
+      case '-':
+        setOperandDivider(true);
+        setFirstOperand(parseOperand(result));
+        setOperator('subtract');
+        break;
+      case '=':
+        const displayValue = parseOperand(result);
+        makeOperation(displayValue);
+        setSecondOperand(displayValue);
+    }
   }
 
   const rowFactory = (symbolsRow: (string | number)[]) => {
@@ -27,7 +111,7 @@ const Calculator = () => {
           symbolsRow.map(symbol => {
             return (
               !diffLayoutSymbols.includes(symbol) ?
-                <Grid item xs={3} key={symbol}>
+                <Grid item xs={3} key={symbol.toString() + Math.random()}>
                   <Button
                     className={styles['regular-button']}
                     onClick={(e) => void handleAction(symbol)}
@@ -37,7 +121,7 @@ const Calculator = () => {
                   </Button>
                 </Grid>
                 :
-                <Grid item xs={6} key={symbol}>
+                <Grid item xs={6} key={symbol.toString()}>
                   <Button className={`${styles['regular-button']} ${styles['double-button']}`} onClick={(e) => void handleAction(symbol)} fullWidth variant="contained">0</Button>
                 </Grid>
             )
@@ -51,13 +135,13 @@ const Calculator = () => {
     <Grid container justifyContent="center"  >
       <Grid item xs={12} sm={6} md={4} lg={3} xl={2} p={0.5} className={styles.container} spacing={0} container direction="row" alignItems="flex-start" >
         <Grid item xs={12}>
-          <Typography variant="h2" align="right">{result}</Typography>
+          <Typography variant="h3" align="right" className={styles.display}>{result}</Typography>
         </Grid>
         {
           [
-            rowFactory(['M', 'M+', '\u2190', 'C']),
-            rowFactory(['M+', 'MC', "\u00B1", "\u00F7"]),
-            rowFactory([7, 8, 9, "\u00D7"]),
+            rowFactory(['M', 'MR', '\u2190', 'C']),
+            rowFactory(['M+', 'MC', '\u00B1', '\u00F7']),
+            rowFactory([7, 8, 9, '\u00D7']),
             rowFactory([4, 5, 6, '-']),
             rowFactory([1, 2, 3, '+']),
             rowFactory([0, '.', '='])
