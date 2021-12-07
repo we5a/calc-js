@@ -1,35 +1,43 @@
 import bigDecimal from 'js-big-decimal';
 
-export const computator = {
-  add: (a, b) => {
-    const A = new bigDecimal(a);
-    const B = new bigDecimal(b);
-    const result = A.add(B).getValue();
-    return parse(result);
-  },
-  subtract: (a, b) => {
-    const A = new bigDecimal(a);
-    const B = new bigDecimal(b);
-    const result = A.subtract(B).getValue();
-    return parse(result);
-  },
-  divide: (a, b) => {
-    const A = new bigDecimal(a);
-    const B = new bigDecimal(b);
-    const result = A.divide(B, 9).getValue();
-    return parse(result);
-  },
-  multiply: (a, b) => {
-    const A = new bigDecimal(a);
-    const B = new bigDecimal(b);
-    const result = A.multiply(B).getValue();
-    console.log('Result', result);
-    return parse(result);
-  },
+// todo add constructor with calculation parameters
+class Computator {
+  private operands: bigDecimal[];
 
+  private setOperands(ops) {
+    this.operands = ops.map(o => {
+      return new bigDecimal(o);
+    });
+  }
+
+  public add(a, b) {
+    this.setOperands(Array.from(arguments));
+    const result = this.operands[0].add(this.operands[1]).getValue();
+    return parse(result);
+  }
+
+  public subtract(a, b) {
+    this.setOperands(Array.from(arguments));
+    const result = this.operands[0].subtract(this.operands[1]).getValue();
+    return parse(result);
+  }
+
+  public divide(a, b) {
+    this.setOperands(Array.from(arguments));
+    const result = this.operands[0].divide(this.operands[1], 9).getValue();
+    return parse(result);
+  }
+
+  public multiply(a, b) {
+    this.setOperands(Array.from(arguments));
+    const result = this.operands[0].multiply(this.operands[1]).getValue();
+    return parse(result);
+  }
 }
 
-function parse(result) {
+export const computator = new Computator();
+
+function parse(result: string): string {
   let number: number;
   let parsedNumber: string;
 
