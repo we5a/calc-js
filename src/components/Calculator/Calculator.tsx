@@ -2,16 +2,10 @@ import React, { useState } from 'react';
 import Button from '@mui/material/Button';
 import { Grid } from '@mui/material';
 import { Typography } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+
 import styles from './Calculator.module.scss';
 import { computator, parse } from '../../utils/computator';
 import useLocalStorage from '../../hooks/use-local-storage';
-
-const useStyles = makeStyles({
-  button: {
-    borderRadius: 8
-  }
-});
 
 const MAX_REGISTER = 10;
 
@@ -45,13 +39,18 @@ const Calculator = () => {
       const result = computator[operator](firstOperand, second);
       setResult(result);
       setFirstOperand(+result); // to number change
-      setSecondOperand(0);
     } catch (e: any) {
       console.log(e?.message);
       setIsError(true);
       setFirstOperand(0);
       return;
     }
+  }
+
+  const prepareOperation = () => {
+    setSecondOperand(0);
+    setOperandDivider(true);
+    setFirstOperand(parseOperand(result));
   }
 
   const handleAction = (symbol) => {
@@ -71,6 +70,8 @@ const Calculator = () => {
         break;
       case 'C':
         setResult('0');
+        setFirstOperand(0);
+        setSecondOperand(0);
         break;
       case '\u00B1':
         if (result === '0') {
@@ -87,30 +88,36 @@ const Calculator = () => {
         setResult(result + '.');
         break;
       case '\u00F7':    // divide
-        setOperandDivider(true);
-        setFirstOperand(parseOperand(result));
+        prepareOperation();
         setOperator('divide');
         break;
       case '\u00D7':    // multiply
-        setOperandDivider(true);
-        setFirstOperand(parseOperand(result));
+        prepareOperation();
         setOperator('multiply');
         break;
       case '+':
-        setOperandDivider(true);
-        setFirstOperand(parseOperand(result));
+        prepareOperation();
         setOperator('add');
         break;
       case '-':
-        setOperandDivider(true);
-        setFirstOperand(parseOperand(result));
+        prepareOperation();
         setOperator('subtract');
         break;
       case '=':
         const displayValue = parseOperand(result);
-        makeOperation(displayValue);
-        setSecondOperand(displayValue);
+        if (!firstOperand) {
+          break;
+        }
+
+        if (secondOperand) {
+          makeOperation(secondOperand);
+          console.log('Sec ex', secondOperand);
+        } else {
+          setSecondOperand(displayValue);
+          makeOperation(displayValue);
+        }
         break;
+
       case 'M':
         setMemory(+result);
         setOperandDivider(true);
@@ -157,8 +164,9 @@ const Calculator = () => {
   }
 
   return (
-    <Grid container justifyContent="center"  >
+    <Grid container justifyContent="center" pt={2}>
       <Grid item xs={12} sm={6} md={4} lg={3} xl={2} p={0.5} className={styles.container} spacing={0} container direction="row" alignItems="flex-start" >
+        <span className={styles.label}>Casio</span>
         <Grid item xs={12}>
           <Typography className={styles.indicator}>{memory ? 'M' : ''}</Typography>
           <Typography className={styles.indicator}>{isError ? 'E' : ''}</Typography>

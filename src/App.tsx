@@ -1,6 +1,4 @@
-import React, { useState } from 'react';
-import logo from './logo.svg';
-import styles from './App.module.scss';
+import React from 'react';
 
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { grey } from '@mui/material/colors';

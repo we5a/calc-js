@@ -6,9 +6,9 @@ $main-border-color: gray;
   border-radius: 10px;
 }
 
-button.regular-button {
-  font-size: 1.3em;
-  border-radius: 50% / 80%;
+.label {
+  font-weight: 600;
+  margin-top: 5px;
 }
 
 .display {
@@ -16,14 +16,19 @@ button.regular-button {
   border-radius: 5px;
 }
 
-button.double-button {
-  border-radius: 25% / 40px;
-}
-
 .button-container:last-of-type {
   Button {
     background-color: $last-row-color;
   }
+}
+
+button.regular-button {
+  font-size: 1.3em;
+  border-radius: 50% / 80%;
+}
+
+button.double-button {
+  border-radius: 25% / 40px;
 }
 
 p.indicator {
