@@ -22,6 +22,7 @@ const Calculator = () => {
   const [operandDivider, setOperandDivider] = useState<boolean>(false);
   const [operator, setOperator] = useState('');
   const [memory, setMemory] = useLocalStorage('calc_mem', 0);
+  const [isError, setIsError] = useState(false);
 
   const enterDigit = (digit) => {
     const updatedValue: string = (result === '0' || operandDivider) ? digit.toString() : result.toString() + digit;
@@ -40,13 +41,21 @@ const Calculator = () => {
   }
 
   const makeOperation = (second) => {
-    const result = computator[operator](firstOperand, second);
-    setResult(result);
-    setFirstOperand(result); // to number change
-    setSecondOperand(0);
+    try {
+      const result = computator[operator](firstOperand, second);
+      setResult(result);
+      setFirstOperand(+result); // to number change
+      setSecondOperand(0);
+    } catch (e: any) {
+      console.log(e?.message);
+      setIsError(true);
+      setFirstOperand(0);
+      return;
+    }
   }
 
   const handleAction = (symbol) => {
+    setIsError(false);
     if (typeof symbol === 'number') {
       enterDigit(symbol);
       return;
@@ -152,9 +161,9 @@ const Calculator = () => {
       <Grid item xs={12} sm={6} md={4} lg={3} xl={2} p={0.5} className={styles.container} spacing={0} container direction="row" alignItems="flex-start" >
         <Grid item xs={12}>
           <Typography className={styles.indicator}>{memory ? 'M' : ''}</Typography>
-          <Typography className={styles.indicator}>E</Typography>
+          <Typography className={styles.indicator}>{isError ? 'E' : ''}</Typography>
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={12} mb={1}>
           <Typography variant="h3" align="right" className={styles.display}>{result}</Typography>
         </Grid>
         {

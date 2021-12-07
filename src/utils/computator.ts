@@ -57,6 +57,5 @@ export function parse(result: string): string {
     }
   }
 
-  console.log('End', parsedNumber, parsedNumber.toString().length);
   return parsedNumber;
 }

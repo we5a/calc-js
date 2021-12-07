@@ -1,8 +1,9 @@
 $last-row-color: #fd9500;
+$main-border-color: gray;
 
 .container {
-  border: 1px solid blue;
-  // height: 600px;
+  border: 2px solid $main-border-color;
+  border-radius: 10px;
 }
 
 button.regular-button {
@@ -11,7 +12,8 @@ button.regular-button {
 }
 
 .display {
-  border: 1px solid red;
+  border: 1px solid $main-border-color;
+  border-radius: 5px;
 }
 
 button.double-button {
